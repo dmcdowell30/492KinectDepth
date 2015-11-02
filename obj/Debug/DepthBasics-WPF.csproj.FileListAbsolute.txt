@@ -1,0 +1,13 @@
+C:\C#\DepthBasics-WPF\bin\AnyCPU\Debug\DepthBasics-WPF.exe.config
+C:\C#\DepthBasics-WPF\bin\AnyCPU\Debug\DepthBasics-WPF.exe
+C:\C#\DepthBasics-WPF\bin\AnyCPU\Debug\DepthBasics-WPF.pdb
+C:\C#\DepthBasics-WPF\obj\Debug\DepthBasics-WPF.csprojResolveAssemblyReference.cache
+C:\C#\DepthBasics-WPF\obj\Debug\MainWindow.baml
+C:\C#\DepthBasics-WPF\obj\Debug\MainWindow.g.cs
+C:\C#\DepthBasics-WPF\obj\Debug\App.g.cs
+C:\C#\DepthBasics-WPF\obj\Debug\DepthBasics-WPF_MarkupCompile.cache
+C:\C#\DepthBasics-WPF\obj\Debug\DepthBasics-WPF.g.resources
+C:\C#\DepthBasics-WPF\obj\Debug\Microsoft.Samples.Kinect.DepthBasics.Properties.Resources.resources
+C:\C#\DepthBasics-WPF\obj\Debug\DepthBasics-WPF.csproj.GenerateResource.Cache
+C:\C#\DepthBasics-WPF\obj\Debug\DepthBasics-WPF.exe
+C:\C#\DepthBasics-WPF\obj\Debug\DepthBasics-WPF.pdb
