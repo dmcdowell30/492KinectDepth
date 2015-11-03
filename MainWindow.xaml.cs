@@ -50,6 +50,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         /// Intermediate storage for frame data converted to color
         /// </summary>
         private byte[] depthPixels = null;
+        private ushort[] depthStuff = null;
 
         /// <summary>
         /// Current status text to display
@@ -75,6 +76,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
             // allocate space to put the pixels being received and converted
             this.depthPixels = new byte[this.depthFrameDescription.Width * this.depthFrameDescription.Height];
+            this.depthStuff = new ushort[this.depthFrameDescription.Width * this.depthFrameDescription.Height];
 
             // create the bitmap to display
             this.depthBitmap = new WriteableBitmap(this.depthFrameDescription.Width, this.depthFrameDescription.Height, 96.0, 96.0, PixelFormats.Gray8, null);
@@ -180,7 +182,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 {
                     for (j = 0; j < this.depthFrameDescription.Width; j++)
                     {
-                        pixels[j, i] = this.depthPixels[k];
+                        pixels[j, i] = this.depthStuff[k];
                         k--;
                     }
                 }
@@ -320,6 +322,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
             {
                 if (depthFrame != null)
                 {
+                    depthFrame.CopyFrameDataToArray(depthStuff);
                     // the fastest way to process the body index data is to directly access 
                     // the underlying buffer
                     using (Microsoft.Kinect.KinectBuffer depthBuffer = depthFrame.LockImageBuffer())
