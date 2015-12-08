@@ -1,5 +1,5 @@
 %Change the file name based on the what output file you are testing
-M = csvread( 'C:\C#\KinectScreenshot-Depth-06-38-37-Output.csv' )
+M = csvread( 'C:\KinectData\KinectScreenshot-Depth-06-38-37-Output.csv' )
 N=1000-M
 O=N
 O(O>400)=0
