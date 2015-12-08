@@ -187,54 +187,19 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                     {
                         pixels[j, i] = this.depthStuff[k];
                         double pix = pixels[j, i];
+
+                        if (depthStuff[k] == 0)
+                        {
+                            theUntouchables++;
+                        }
+
                         k--;
                     }
                 }
 
-                //Height from dead center averaged among 4 points
-                double kinectX = pixels[depthFrameDescription.Width / 2, depthFrameDescription.Height / 2];
-
                 int c, d;
 
-                Boolean pastCenter = false;
-
-                //863
-                //2.43
-                //1.215
-
-                String fileName = "C:\\C#\\KinectScreenshot-Depth-" + time + "-Output.txt";
-                using (StreamWriter file = new StreamWriter(fileName))
-                {
-
-                    file.Write("Fraction unreliable: " + theUntouchables + " / " + (depthFrameDescription.Height * depthFrameDescription.Width) + "\n");
-                    file.Write("Percentage unreliable: " + (theUntouchables / (depthFrameDescription.Height * depthFrameDescription.Width)) * 100 + "%\n");
-                    file.Write(depthFrameDescription.Width + "\n");
-                    file.Write(depthFrameDescription.Height + "\n");
-                    file.Write(kinectX + "\n");
-                    file.Write("\n");
-                }
-
-                double csvValue = 0.0;
-                using (StreamWriter outfile = new StreamWriter("C:\\C#\\KinectScreenshot-Depth-" + time + "-Output.csv"))
-                {
-                    for (int t = 0; t < this.depthFrameDescription.Height; t++)
-                    {
-                        string content = "";
-                        for (int s = this.depthFrameDescription.Width - 1; s >= 0; s--)
-                        {
-                            csvValue = (pixels[s, t]); // + 4.5); // * 25.400;
-                            content += csvValue + ",";
-                            if (content.Contains("NaN"))
-                                content.Replace("NaN", "0");
-                            if (pixels[s, t] == 0)
-                            {
-                                theUntouchables++;
-                            }
-                        }
-                        outfile.WriteLine(content);
-                    }
-                }
-
+                //Correct for the x-axis
                 for (c = 0; c < depthFrameDescription.Width; c++)
                 {
                     for (d = 0; d < depthFrameDescription.Height; d++)
@@ -257,52 +222,16 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                             (-0.03215) * c +
                             9.665;
 
-
-                        /*
-                        Linear model Poly4:
-                        f4(x) = p1 * x ^ 4 + p2 * x ^ 3 + p3 * x ^ 2 + p4 * x + p5
-                        Coefficients(with 95 % confidence bounds):
-                        p1 = 2.085e-09(1.394e-09, 2.776e-09)
-                        p2 = -2.043e-06(-2.756e-06, -1.33e-06)
-                        p3 = 0.000717(0.0004741, 0.0009599)
-                        p4 = -0.1262(-0.1567, -0.09566)
-                        p5 = 9.532(8.406, 10.66)
-                        */
-                        /*
-                        double correction = 2.085e-09 * Math.Pow(c, 4) +
-                            -2.043e-06 * Math.Pow(c, 3) +
-                            0.000717 * Math.Pow(c, 2) +
-                            -0.1262 * Math.Pow(c, 1) +
-                            9.532;
-                        */
                         correctionMatrix[c, d] = correction;
                         double pix = pixels[c, d];
                     }
                 }
 
+                //Correct for the y-axis
                 for (d = 0; d < depthFrameDescription.Height; d++)
                 {
                     for (c = 0; c < depthFrameDescription.Width; c++)
                     {
-                        /*
-                        f(x) = p1 * x ^ 5 + p2 * x ^ 4 + p3 * x ^ 3 + p4 * x ^ 2 + p5 * x + p6
-                        Coefficients(with 95 % confidence bounds):
-                        p1 = 1.483e-11(1.109e-11, 1.857e-11)
-                        p2 = -1.522e-08(-2.003e-08, -1.041e-08)
-                        p3 = 4.908e-06(2.674e-06, 7.141e-06)
-                        p4 = -0.000333(-0.0007836, 0.0001175)
-                        p5 = -0.08777(-0.1249, -0.05064)
-                        p6 = 9.054(8.116, 9.992)
-                        */
-                        /*
-                        double correction = 1.483e-11 * Math.Pow(c, 5) + 
-                            -1.522e-08 * Math.Pow(c, 4) + 
-                            4.908e-06 * Math.Pow(c, 3) + 
-                            (-0.000333) * Math.Pow(c, 2) + 
-                            (-0.08777) * c + 
-                            9.054;
-                        */
-
                         /*
                         Linear model Poly4:
                         f4(x) = p1 * x ^ 4 + p2 * x ^ 3 + p3 * x ^ 2 + p4 * x + p5
@@ -327,10 +256,9 @@ namespace Microsoft.Samples.Kinect.DepthBasics
 
                         correctionMatrix[c, d] = correction;
                     }
-
                 }
 
-
+                //Apply the correction matrix to the depth data
                 for (c = 0; c < depthFrameDescription.Width; c++)
                 {
                     for (d = 0; d < depthFrameDescription.Height; d++)
@@ -344,30 +272,34 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 }
 
                 //Create the .CSV file
-                //49 Horizontal
-                //39.75 Vertical
-                //86.3cm high
-                //Theta = 35.795 horz with 62.23cm per side
-                //Theta = 30.3249 vert with 50.48cm per side
-                csvValue = 0.0;
-                using (StreamWriter outfile = new StreamWriter("C:\\C#\\KinectScreenshot-Depth-" + time + "-Output2.csv"))
+                double csvValue = 0.0;
+                using (StreamWriter outfile = new StreamWriter("C:\\KinectData\\KinectScreenshot-Depth-" + time + "-Output.csv"))
                 {
                     for (int t = 0; t < this.depthFrameDescription.Height; t++)
                     {
                         string content = "";
                         for (int s = this.depthFrameDescription.Width - 1; s >= 0; s--)
                         {
-                            csvValue = (pixels[s, t]); // + 4.5); // * 25.400;
+                            csvValue = (pixels[s, t]);
                             content += csvValue + ",";
-                            if (content.Contains("NaN"))
-                                content.Replace("NaN", "0");
-                            if (pixels[s, t] == 0)
-                            {
-                                theUntouchables++;
-                            }
                         }
                         outfile.WriteLine(content);
                     }
+                }
+
+                //Create the information text file
+                double kinectX = (pixels[depthFrameDescription.Width/2, depthFrameDescription.Height/2] + 
+                    pixels[(depthFrameDescription.Width/2)+1, depthFrameDescription.Height/2] + 
+                    pixels[depthFrameDescription.Width/2, (depthFrameDescription.Height/2)+1] + 
+                    pixels[(depthFrameDescription.Width/2)+1, (depthFrameDescription.Height/2)+1]) / 4;
+
+                using (StreamWriter file = new StreamWriter("C:\\KinectData\\KinectScreenshot-Depth-" + time + "-Output.txt"))
+                {
+
+                    file.Write("Fraction unreliable: " + theUntouchables + " / " + (depthFrameDescription.Height * depthFrameDescription.Width) + "\n");
+                    file.Write("Percentage unreliable: " + (theUntouchables / (depthFrameDescription.Height * depthFrameDescription.Width)) * 100 + "%\n");
+                    file.Write("Center distance: " + kinectX + "\n");
+                    file.Write("\n");
                 }
             }
             catch (Exception Ex)
@@ -383,12 +315,7 @@ namespace Microsoft.Samples.Kinect.DepthBasics
                 // create frame from the writable bitmap and add to encoder
                 encoder.Frames.Add(BitmapFrame.Create(this.depthBitmap));
 
-                //string time = System.DateTime.UtcNow.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
-
-                //string myPhotos = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-
-                string path = "C:\\C#\\KinectScreenshot-Depth-" + time + "-Image.png";
-                //Path.Combine(myPhotos,KinectScreenshot-Depth-" + time + ".png");
+                string path = "C:\\KinectData\\KinectScreenshot-Depth-" + time + "-Image.png";
 
                 // write the new file to disk
                 try
@@ -464,10 +391,6 @@ namespace Microsoft.Samples.Kinect.DepthBasics
         {
             // depth frame data is a 16 bit value
             ushort* frameData = (ushort*)depthFrameData;
-
-
-            //TODO figure out this raw data
-
 
             // convert depth to a visual representation
             for (int i = 0; i < (int)(depthFrameDataSize / this.depthFrameDescription.BytesPerPixel); ++i)
