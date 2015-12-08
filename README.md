@@ -40,3 +40,13 @@ Get a close fit and then save the polynomial to the workspace as either f or f4.
 Then go back to the script and rerun the program and it should display your data. 
 
 NOTE: if the data is already corrected in the C# program, you won't see much of a change here.
+
+
+=============== FOR C PROGRAM ===============
+To use CProg.c, you will first need to compile it into an program using "gcc -o programName CProg.c" on a Linux device.
+
+Then you should be able to run it by doing ./programName.
+Once started it should appear blank on the command line.
+
+Enter a number and hit ENTER and it should create a child process that will read a text file and display it to console.
+The default name it looks for is "test.txt"
